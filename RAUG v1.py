@@ -1,25 +1,63 @@
 #@author Cj Maxwell
 import turtle
-
+import winsound
+colors = ['grey', 'red']
+x, y, z = 0, 1, 2
+thatsannoying = False
+currentmenu = "Main Menu"
 def main():
     screen = turtle.Screen()
     screen.setup(width=1., height=1.)
     screen.bgcolor('black')
-    width, height = boxInScreen(screen)
-    menpos = mainMenu(width, height)
-
-    #print(menpos)
+    winsound.PlaySound('german_fire_siren_calls_fire_department_rain_in_ba.wav', winsound.SND_ASYNC)
+    #screen.bgpic('Pentagram 2.png')
+    color = 'gray'
+    width, height = boxInScreen(screen, color)
+    t = turtle.Turtle()
+    menpos = mainMenu(width, height, t)
 
     def getClickCoords(x,y):
-        chooseMenuItem(x,y,menpos)
-
+        global currentmenu
+        if currentmenu=='Main Menu':
+            menuitem = chooseMenuItem(x,y,menpos)
+            if menuitem in menpos:
+                t.hideturtle()
+                t.color('yellow')
+                t.up()
+                t.goto(menpos[menuitem][0]-20, menpos[menuitem][1])
+                t.down()
+                
+                for i in range(2):
+                    t.fd(270)
+                    t.left(90)
+                    t.fd(45)
+                    t.left(90)
+                
+                t.reset()
+                currentmenu = menuitem
+            
+    def flashScreen():
+        global thatsannoying
+        invertColors(screen)
+        if not thatsannoying:
+            screen.ontimer(flashScreen, 250)
+        
+    screen.ontimer(flashScreen, 1000)
     screen.onclick(getClickCoords)
     screen.mainloop()
 
-def boxInScreen(screen):
+def invertColors(screen):
+    global x,y
+    dummy1, dummy2 = boxInScreen(screen, colors[y])
+    temp = x
+    x=y
+    y=temp
+    
+
+def boxInScreen(screen,color):
     t = turtle.Turtle()
-    t.color('grey', 'black')
-    #t.fillcolor('')
+    t.hideturtle()
+    t.color(color,'black')
     width = screen.window_width()
     height = screen.window_height()
     t.speed(0)
@@ -29,15 +67,14 @@ def boxInScreen(screen):
     t.fd(height/2-40)
     t.lt(90)
     t.pd()
-    t.begin_fill()
+    
     for i in range(2):
         t.fd(width-80)
         t.left(90)
         t.fd(height-80)
         t.left(90)
-    t.end_fill()
     t.pu()
-    t.hideturtle()
+    
     return(width-80, height-80)
     
 
@@ -54,8 +91,8 @@ def populateDeck():
 def createPlayer(name):
     pass
 
-def mainMenu(width, height):
-    t = turtle.Turtle()
+def mainMenu(width, height, t):
+    t.hideturtle()
     t.color('yellow')
     t.pu()
     t.goto(-width/2.5,height/3.25)
@@ -63,8 +100,6 @@ def mainMenu(width, height):
     menu = ["New Game",'Load Game', 'Game Options', 'Save Game', 'Save & Quit']
     menpos = {}
     menpos["Main Menu"] = t.pos()
-    t.stamp()
-    print('Main Menu', t.pos())
     t.write("Main Menu", font=("Monospace", 36, "bold"))
     
     t.up()
@@ -77,35 +112,47 @@ def mainMenu(width, height):
         t.fd(55)
         t.lt(90)
         t.fd(15+2*levelsin)
-        menpos[menuitem] = t.pos()
-        t.stamp()
-        print(menuitem, t.pos())
-        
-        
+        menpos[menuitem] = t.pos()        
         t.write(menuitem[0], font=("Monospace", 24, "underline"))
-        
         t.pu()
         t.fd(30)
         t.write(menuitem[1:], font=("Monospace", 24, "normal"))
         t.pd()
         t.bk(15+2*levelsin)
     t.hideturtle()
-    print(menpos)
     return menpos
     
 
     
 def chooseMenuItem(x,y,menpos):
-    print(x,y)
+    global thatsannoying
+    selection = ''
     if menpos["Main Menu"][1] > y > menpos["New Game"][1]:
+        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         print('New Game Selected')
+        selection = 'New Game'
+        thatsannoying = True
     elif menpos["New Game"][1] > y > menpos["Load Game"][1]:
+        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         print('Load Game Selected')
+        selection = 'Load Game'
+        thatsannoying = True
     elif menpos["Load Game"][1] > y > menpos["Game Options"][1]:
+        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         print('Game Options Selected')
+        selection = 'Game Options'
+        thatsannoying = True
     elif menpos["Game Options"][1] > y > menpos["Save Game"][1]:
+        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         print('Save Game Selected')
+        selection = 'Save Game'
+        thatsannoying = True
     elif menpos["Save Game"][1] > y > menpos["Save & Quit"][1]:
+        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         print('Save & Quit Selected')
+        selection = 'Save & Quit'
+        thatsannoying = True
+    return selection
+
 #function calls
 main()

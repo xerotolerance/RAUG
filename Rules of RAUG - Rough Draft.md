@@ -1,3 +1,8 @@
+Sound Effects credit goes to http://www.freesfx.co.uk
+They're help is very much appreciated
+
+
+
 Rules of RAUG:
 
     + Don't Die
