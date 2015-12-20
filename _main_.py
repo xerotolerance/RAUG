@@ -1,13 +1,22 @@
 #@author Cj Maxwell
+#@file: Runs main menu
+#@description: pulls all aspects of game together
+#@dependencies: _newgame_.py
+#               _savegame_.py
+#               _gameoptions_.py
+
 import turtle
 import winsound
+import _newgame_
 
 colors = ['grey', 'red']
 x, y, z = 0, 1, 2
 thatsannoying = False
 currentmenu = "Main Menu"
+menpos = {}
 
 def main():
+    global menpos
     screen = turtle.Screen()
     screen.setup(width=1., height=1.)
     screen.bgcolor('black')
@@ -16,12 +25,12 @@ def main():
     color = 'gray'
     width, height = boxInScreen(screen, color)
     t = turtle.Turtle()
-    menpos = mainMenu(width, height, t)
-
+    menpos = mainMenu(width, height, screen, t)
     def getClickCoords(x,y):
-        global currentmenu
+        global currentmenu, menpos
+        print(menpos["Main Menu"])
         if currentmenu=='Main Menu':
-            menuitem = chooseMenuItem(x,y,menpos)
+            menuitem = chooseMenuItem(x,y)
             if menuitem in menpos:
                 t.hideturtle()
                 t.color('yellow')
@@ -37,7 +46,25 @@ def main():
                 
                 t.reset()
                 currentmenu = menuitem
-            
+                print('After click, currentmenu is: ', currentmenu) 
+        elif currentmenu =='New Game':
+            menpos=_newgame_.newGameMenu(width, height, screen, t)
+            menuitem = _newgame_.chooseMenuItem(x,y,menpos)
+            if menuitem in menpos:
+                t.hideturtle()
+                t.color('brown')
+                t.up()
+                t.goto(menpos[menuitem][0]-20, menpos[menuitem][1])
+                t.down()
+                
+                for i in range(2):
+                    t.fd(270)
+                    t.left(90)
+                    t.fd(45)
+                    t.left(90)
+                
+                t.reset()
+                currentmenu = menuitem
     def flashScreen():
         global thatsannoying
         invertColors(screen)
@@ -46,6 +73,9 @@ def main():
         
     screen.ontimer(flashScreen, 1000)
     screen.onclick(getClickCoords)
+    print('Made it, current menu is: ', currentmenu)
+##    if currentmenu == 'New Game':
+##        _newgame_.newGameMenu(width, height, screen, t)
     screen.mainloop()
 
 def invertColors(screen):
@@ -76,7 +106,7 @@ def boxInScreen(screen,color):
         t.fd(height-80)
         t.left(90)
     t.pu()
-    
+    t.clear()
     return(width-80, height-80)
     
 
@@ -93,7 +123,7 @@ def populateDeck():
 def createPlayer(name):
     pass
 
-def mainMenu(width, height, t):
+def mainMenu(width, height, screen, t):
     t.hideturtle()
     t.color('yellow')
     t.pu()
@@ -126,8 +156,8 @@ def mainMenu(width, height, t):
     
 
     
-def chooseMenuItem(x,y,menpos):
-    global thatsannoying
+def chooseMenuItem(x,y):
+    global thatsannoying,menpos
     selection = ''
     if menpos["Main Menu"][1] > y > menpos["New Game"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
