@@ -4,7 +4,6 @@ import turtle
 import winsound
 
 def newGameMenu(width, height, screen, t):
-    print('Made IT')
     player_name = screen.textinput("Discover yourself: ", "And you would be... ")
     t.hideturtle()
     t.color('brown')
@@ -41,27 +40,27 @@ def chooseMenuItem(x,y, menpos):
     selection = ''
     if menpos["Player Menu"][1] > y > menpos["Build Deck"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Build Deck Selected')
+        #print('Build Deck Selected')
         selection = 'Build Deck'
         thatsannoying = True
     elif menpos["Build Deck"][1] > y > menpos["Build Stats"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Build Stats Selected')
+        #print('Build Stats Selected')
         selection = 'Build Stats'
         thatsannoying = True
     elif menpos["Build Stats"][1] > y > menpos["Trade Goods"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Trade Goods Selected')
+        #print('Trade Goods Selected')
         selection = 'Trade Goods'
         thatsannoying = True
     elif menpos["Trade Goods"][1] > y > menpos["Save Game"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Save Game Selected')
+        #print('Save Game Selected')
         selection = 'Save Game'
         thatsannoying = True
     elif menpos["Save Game"][1] > y > menpos["Save & Quit"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Save & Quit Selected')
+        #print('Save & Quit Selected')
         selection = 'Save & Quit'
         thatsannoying = True
     return selection

@@ -28,7 +28,6 @@ def main():
     menpos = mainMenu(width, height, screen, t)
     def getClickCoords(x,y):
         global currentmenu, menpos
-        print(menpos["Main Menu"])
         if currentmenu=='Main Menu':
             menuitem = chooseMenuItem(x,y)
             if menuitem in menpos:
@@ -46,9 +45,9 @@ def main():
                 
                 t.reset()
                 currentmenu = menuitem
-                print('After click, currentmenu is: ', currentmenu) 
+                menpos=_newgame_.newGameMenu(width, height, screen, t)
         elif currentmenu =='New Game':
-            menpos=_newgame_.newGameMenu(width, height, screen, t)
+            #menpos=_newgame_.newGameMenu(width, height, screen, t)
             menuitem = _newgame_.chooseMenuItem(x,y,menpos)
             if menuitem in menpos:
                 t.hideturtle()
@@ -73,9 +72,6 @@ def main():
         
     screen.ontimer(flashScreen, 1000)
     screen.onclick(getClickCoords)
-    print('Made it, current menu is: ', currentmenu)
-##    if currentmenu == 'New Game':
-##        _newgame_.newGameMenu(width, height, screen, t)
     screen.mainloop()
 
 def invertColors(screen):
@@ -161,27 +157,27 @@ def chooseMenuItem(x,y):
     selection = ''
     if menpos["Main Menu"][1] > y > menpos["New Game"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('New Game Selected')
+        #print('New Game Selected')
         selection = 'New Game'
         thatsannoying = True
     elif menpos["New Game"][1] > y > menpos["Load Game"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Load Game Selected')
+        #print('Load Game Selected')
         selection = 'Load Game'
         thatsannoying = True
     elif menpos["Load Game"][1] > y > menpos["Game Options"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Game Options Selected')
+        #print('Game Options Selected')
         selection = 'Game Options'
         thatsannoying = True
     elif menpos["Game Options"][1] > y > menpos["Save Game"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Save Game Selected')
+        #print('Save Game Selected')
         selection = 'Save Game'
         thatsannoying = True
     elif menpos["Save Game"][1] > y > menpos["Save & Quit"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        print('Save & Quit Selected')
+        #print('Save & Quit Selected')
         selection = 'Save & Quit'
         thatsannoying = True
     return selection
