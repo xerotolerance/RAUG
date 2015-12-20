@@ -8,6 +8,7 @@
 import turtle
 import winsound
 import _newgame_
+import tkinter
 
 colors = ['grey', 'red']
 x, y, z = 0, 1, 2
@@ -18,8 +19,13 @@ menpos = {}
 def main():
     global menpos
     screen = turtle.Screen()
+##    cv = screen.getcanvas()
+##    cv.pack(expand = 'yes', fill = 'both')
+##    firegif1 = tkinter.PhotoImage(file = 'BurningFlame0.gif')
+##    cv.create_image(50, 10, image = firegif1, anchor = 'nw')
     screen.setup(width=1., height=1.)
     screen.bgcolor('black')
+    
     winsound.PlaySound('german_fire_siren_calls_fire_department_rain_in_ba.wav', winsound.SND_ASYNC)
     #screen.bgpic('Pentagram 2.png')
     color = 'gray'
@@ -27,43 +33,8 @@ def main():
     t = turtle.Turtle()
     menpos = mainMenu(width, height, screen, t)
     def getClickCoords(x,y):
-        global currentmenu, menpos
-        if currentmenu=='Main Menu':
-            menuitem = chooseMenuItem(x,y)
-            if menuitem in menpos:
-                t.hideturtle()
-                t.color('yellow')
-                t.up()
-                t.goto(menpos[menuitem][0]-20, menpos[menuitem][1])
-                t.down()
-                
-                for i in range(2):
-                    t.fd(270)
-                    t.left(90)
-                    t.fd(45)
-                    t.left(90)
-                
-                t.reset()
-                currentmenu = menuitem
-                menpos=_newgame_.newGameMenu(width, height, screen, t)
-        elif currentmenu =='New Game':
-            #menpos=_newgame_.newGameMenu(width, height, screen, t)
-            menuitem = _newgame_.chooseMenuItem(x,y,menpos)
-            if menuitem in menpos:
-                t.hideturtle()
-                t.color('brown')
-                t.up()
-                t.goto(menpos[menuitem][0]-20, menpos[menuitem][1])
-                t.down()
-                
-                for i in range(2):
-                    t.fd(270)
-                    t.left(90)
-                    t.fd(45)
-                    t.left(90)
-                
-                t.reset()
-                currentmenu = menuitem
+        mainMenuActivator(x,y, width, height, screen, t)
+
     def flashScreen():
         global thatsannoying
         invertColors(screen)
@@ -105,8 +76,60 @@ def boxInScreen(screen,color):
     t.clear()
     return(width-80, height-80)
     
+def mainMenuActivator(x,y, width, height, screen, t):
+    global currentmenu, menpos
 
-
+    def openNewGameMenu():
+        menpos = _newgame_.newGameMenu(width, height, screen, t)
+        _newgame_.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(_newgame_.getClickCoords)
+    def openLoadGameMenu():
+        menpos = _loadgame_.newGameMenu(width, height, screen, t)
+        _loadgame_.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(_loadgame_.getClickCoords)
+    def openGameOtionsMenu():
+        menpos = _gameoptions_.newGameMenu(width, height, screen, t)
+        _gameoptions_.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(_gameoptions_.getClickCoords)
+    def openSaveMenu():
+        menpos = _savegame_.newGameMenu(width, height, screen, t)
+        _savegame_.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(_savegame_.getClickCoords)
+    
+    if currentmenu=='Main Menu':
+        boxT = turtle.Turtle()
+        boxT.color('yellow')
+        menuitem = chooseMenuItem(x,y)
+        winsound.PlaySound('spooky_film_theme_scary_yet_tension_building_theme.wav', winsound.SND_ASYNC)
+        if menuitem in menpos:
+            boxT.hideturtle()
+            boxT.color('yellow')
+            boxT.up()
+            boxT.goto(menpos[menuitem][0]-20, menpos[menuitem][1])
+            boxT.down()
+            
+            for i in range(2):
+                boxT.fd(270)
+                boxT.left(90)
+                boxT.fd(45)
+                boxT.left(90)
+            boxT.reset()
+            #print(menuitem)
+            if 'Save' not in menuitem:
+                t.reset()
+                pass
+            currentmenu = menuitem
+            if currentmenu == 'New Game':
+                openNewGameMenu()
+            elif currentmenu == 'Load Game'
+                openLoadGameMenu()
+            elif currentmenu == 'Game Options'
+                openGameOptionsMenu()
+            elif currentMenu == 'Save Game'
+                openSaveMenu()
+            elif currentMenu == 'Save & Quit'
+                _savegame_.quickSave()
+                s.bye()
 def deul(player1hand,player2hand):
     pass
 

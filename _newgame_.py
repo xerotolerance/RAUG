@@ -40,27 +40,61 @@ def chooseMenuItem(x,y, menpos):
     selection = ''
     if menpos["Player Menu"][1] > y > menpos["Build Deck"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        #print('Build Deck Selected')
+        print('Build Deck Selected')
         selection = 'Build Deck'
         thatsannoying = True
     elif menpos["Build Deck"][1] > y > menpos["Build Stats"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        #print('Build Stats Selected')
+        print('Build Stats Selected')
         selection = 'Build Stats'
         thatsannoying = True
     elif menpos["Build Stats"][1] > y > menpos["Trade Goods"][1]:
         winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        #print('Trade Goods Selected')
+        print('Trade Goods Selected')
         selection = 'Trade Goods'
         thatsannoying = True
     elif menpos["Trade Goods"][1] > y > menpos["Save Game"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        #print('Save Game Selected')
+        #winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+        print('Save Game Selected')
         selection = 'Save Game'
         thatsannoying = True
-    elif menpos["Save Game"][1] > y > menpos["Save & Quit"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
-        #print('Save & Quit Selected')
-        selection = 'Save & Quit'
+    elif menpos["Save Game"][1] > y > menpos["Save and Quit"][1]:
+        #winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+        print('Save and Quit Selected')
+        selection = 'Save and Quit'
         thatsannoying = True
     return selection
+
+args={}
+def passArgs(width, height, screen, t, currentmenu, menpos):
+    global args
+    args = {'width': width, 'height':height, 'screen':screen,
+            't': t, 'currentmenu':currentmenu, 'menpos':menpos}
+def getClickCoords(x,y):
+        newGameMenuActivator(x,y, args['width'], args['height'], args['screen'], args['t'], args['currentmenu'], args['menpos'])
+        
+def newGameMenuActivator(x,y, width, height, screen, t, currentmenu, menpos):
+    #t = t.clone()
+    boxT = turtle.Turtle()
+    boxT.color('brown')
+    if currentmenu =='New Game':
+        menuitem = chooseMenuItem(x,y,menpos)
+        if menuitem in menpos:
+            print('menuitem clicked: ', menuitem)
+            boxT.hideturtle()
+            boxT.st()
+            boxT.color('gray')
+            boxT.up()
+            boxT.goto(menpos[menuitem][0]-20+270, menpos[menuitem][1])
+            boxT.down()
+            
+            for i in range(2):
+                boxT.fd(270)
+                boxT.rt(90)
+                boxT.fd(45)
+                boxT.rt(90)
+            boxT.reset()
+            t.reset()
+            if 'Save' not in menuitem:
+                t.reset()
+            currentmenu = menuitem
