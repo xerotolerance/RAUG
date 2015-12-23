@@ -1,35 +1,38 @@
 #@author Cj Maxwell
 #@file: Runs main menu
 #@description: pulls all aspects of game together
-#@dependencies: _newgame_.py
-#               _savegame_.py
-#               _gameoptions_.py
+#@dependencies: playermenutools.py
+#               loadtools.py
+#               gameoptions.py
+#               savetools.py
+
 
 import turtle
 import winsound
-import _newgame_
+
+import playermenutools
+import loadtools
+import gameoptions
+import savetools
 import tkinter
 
 colors = ['grey', 'red']
 x, y, z = 0, 1, 2
 thatsannoying = False
+previousmenu = ""
 currentmenu = "Main Menu"
 menpos = {}
 
 def main():
     global menpos
     screen = turtle.Screen()
-##    cv = screen.getcanvas()
-##    cv.pack(expand = 'yes', fill = 'both')
-##    firegif1 = tkinter.PhotoImage(file = 'BurningFlame0.gif')
-##    cv.create_image(50, 10, image = firegif1, anchor = 'nw')
+
     screen.setup(width=1., height=1.)
     screen.bgcolor('black')
     
-    winsound.PlaySound('german_fire_siren_calls_fire_department_rain_in_ba.wav', winsound.SND_ASYNC)
-    #screen.bgpic('Pentagram 2.png')
     color = 'gray'
-    width, height = boxInScreen(screen, color)
+    outT = turtle.Turtle()
+    width, height = boxInScreen(screen, color, '', True, outT)
     t = turtle.Turtle()
     menpos = mainMenu(width, height, screen, t)
     def getClickCoords(x,y):
@@ -40,23 +43,37 @@ def main():
         invertColors(screen)
         if not thatsannoying:
             screen.ontimer(flashScreen, 150)
-        
+    
     screen.ontimer(flashScreen, 1000)
     screen.onclick(getClickCoords)
     screen.mainloop()
 
+
+def playSiren():
+    global currentmenu
+    print(currentmenu)
+    if currentmenu == 'Main Menu':
+        winsound.PlaySound('german_fire_siren_calls_fire_department_rain_in_ba.wav', winsound.SND_ASYNC)
+
+def playSpooky1():
+    global currentmenu
+    print(currentmenu)
+    if currentmenu == 'New Game':
+        winsound.PlaySound('spooky_film_theme_scary_yet_tension_building_theme.wav', winsound.SND_ASYNC)
+
+
 def invertColors(screen):
     global x,y
-    dummy1, dummy2 = boxInScreen(screen, colors[y])
+    t = turtle.Turtle()
+    dummy1, dummy2 = boxInScreen(screen, colors[y], '', True, t)
     temp = x
     x=y
     y=temp
     
 
-def boxInScreen(screen,color):
-    t = turtle.Turtle()
+def boxInScreen(screen,color,fillcolor, remove_artifacts, t):
     t.hideturtle()
-    t.color(color,'black')
+    t.color(color,fillcolor)
     width = screen.window_width()
     height = screen.window_height()
     t.speed(0)
@@ -66,42 +83,50 @@ def boxInScreen(screen,color):
     t.fd(height/2-40)
     t.lt(90)
     t.pd()
-    
+    t.begin_fill()
     for i in range(2):
         t.fd(width-80)
         t.left(90)
         t.fd(height-80)
         t.left(90)
+    t.end_fill()
     t.pu()
-    t.clear()
+    if remove_artifacts:
+        t.clear()
     return(width-80, height-80)
     
 def mainMenuActivator(x,y, width, height, screen, t):
-    global currentmenu, menpos
+    global currentmenu, previousmenu, menpos
 
     def openNewGameMenu():
-        menpos = _newgame_.newGameMenu(width, height, screen, t)
-        _newgame_.passArgs(width, height, screen, t, currentmenu, menpos)
-        screen.onclick(_newgame_.getClickCoords)
+        menpos = playermenutools.newGameMenu(width, height, screen, t)
+        playermenutools.passArgs(width, height, screen, t, currentmenu,previousmenu, menpos)
+        screen.onclick(playermenutools.getClickCoords)
     def openLoadGameMenu():
-        menpos = _loadgame_.newGameMenu(width, height, screen, t)
-        _loadgame_.passArgs(width, height, screen, t, currentmenu, menpos)
-        screen.onclick(_loadgame_.getClickCoords)
+        menpos = loadtools.loadGameMenu(width, height, screen, t)
+        loadtools.passArgs(width, height, screen, t, currentmenu,previousmenu, menpos)
+        screen.onclick(loadtools.getClickCoords)
     def openGameOtionsMenu():
-        menpos = _gameoptions_.newGameMenu(width, height, screen, t)
-        _gameoptions_.passArgs(width, height, screen, t, currentmenu, menpos)
-        screen.onclick(_gameoptions_.getClickCoords)
+        menpos = gameoptions.gameOptionsMenu(width, height, screen, t)
+        gameoptions.passArgs(width, height, screen, t, currentmenu,previousmenu, menpos)
+        screen.onclick(gameoptions.getClickCoords)
     def openSaveMenu():
-        menpos = _savegame_.newGameMenu(width, height, screen, t)
-        _savegame_.passArgs(width, height, screen, t, currentmenu, menpos)
-        screen.onclick(_savegame_.getClickCoords)
+        menpos = savetools.saveGameMenu(width, height, screen, t)
+        savetools.passArgs(width, height, screen, t, currentmenu,previousmenu, menpos)
+        screen.onclick(savetools.getClickCoords)
     
     if currentmenu=='Main Menu':
         boxT = turtle.Turtle()
+        boxT.hideturtle()
         boxT.color('yellow')
         menuitem = chooseMenuItem(x,y)
-        winsound.PlaySound('spooky_film_theme_scary_yet_tension_building_theme.wav', winsound.SND_ASYNC)
+        
         if menuitem in menpos:
+            if 'Save' not in menuitem:
+                screen.ontimer(playSpooky1, 36999)
+                winsound.PlaySound('spooky_film_theme_scary_yet_tension_building_theme.wav', winsound.SND_ASYNC)
+            if 'Quit' in menuitem:
+                winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
             boxT.hideturtle()
             boxT.color('yellow')
             boxT.up()
@@ -117,19 +142,19 @@ def mainMenuActivator(x,y, width, height, screen, t):
             #print(menuitem)
             if 'Save' not in menuitem:
                 t.reset()
-                pass
+                
             currentmenu = menuitem
             if currentmenu == 'New Game':
                 openNewGameMenu()
-            elif currentmenu == 'Load Game'
+            elif currentmenu == 'Load Game':
                 openLoadGameMenu()
-            elif currentmenu == 'Game Options'
+            elif currentmenu == 'Game Options':
                 openGameOptionsMenu()
-            elif currentMenu == 'Save Game'
+            elif currentmenu == 'Save Game':
                 openSaveMenu()
-            elif currentMenu == 'Save & Quit'
-                _savegame_.quickSave()
-                s.bye()
+            elif currentmenu == 'Save & Quit':
+                savetools.quickSave(width, height)
+                screen.bye()
 def deul(player1hand,player2hand):
     pass
 
@@ -143,6 +168,8 @@ def createPlayer(name):
     pass
 
 def mainMenu(width, height, screen, t):
+    screen.ontimer(playSiren, 87997)
+    winsound.PlaySound('german_fire_siren_calls_fire_department_rain_in_ba.wav', winsound.SND_ASYNC)
     t.hideturtle()
     t.color('yellow')
     t.pu()
@@ -179,27 +206,27 @@ def chooseMenuItem(x,y):
     global thatsannoying,menpos
     selection = ''
     if menpos["Main Menu"][1] > y > menpos["New Game"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+##        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         #print('New Game Selected')
         selection = 'New Game'
         thatsannoying = True
     elif menpos["New Game"][1] > y > menpos["Load Game"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+##        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         #print('Load Game Selected')
         selection = 'Load Game'
         thatsannoying = True
     elif menpos["Load Game"][1] > y > menpos["Game Options"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+##        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         #print('Game Options Selected')
         selection = 'Game Options'
         thatsannoying = True
     elif menpos["Game Options"][1] > y > menpos["Save Game"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+##        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         #print('Save Game Selected')
         selection = 'Save Game'
         thatsannoying = True
     elif menpos["Save Game"][1] > y > menpos["Save & Quit"][1]:
-        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
+##        winsound.PlaySound('silence.wav', winsound.SND_FILENAME)
         #print('Save & Quit Selected')
         selection = 'Save & Quit'
         thatsannoying = True

@@ -1,7 +1,18 @@
 #@author Cj Maxwell
 #@file: Runs tasks related to starting a new game
+#@description: prints player menu and ties together all aspects of creating a new game
+#@dependencies: cardtools.py
+#               stattools.py
+#               tradetools.py
+#               savetools.py
+
 import turtle
 import winsound
+
+import cardtools
+import stattools
+import tradetools
+import savetools
 
 def newGameMenu(width, height, screen, t):
     player_name = screen.textinput("Discover yourself: ", "And you would be... ")
@@ -76,25 +87,56 @@ def getClickCoords(x,y):
 def newGameMenuActivator(x,y, width, height, screen, t, currentmenu, menpos):
     #t = t.clone()
     boxT = turtle.Turtle()
+    boxT.hideturtle()
     boxT.color('brown')
+
+    def openBuildDeckMenu():
+        menpos = cardtools.buildDeckMenu(width, height, screen, t)
+        cardtools.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(cardtools.getClickCoords)
+    def openBuildStatsMenu():
+        menpos = stattools.buildStatsMenu(width, height, screen, t)
+        stattools.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(stattools.getClickCoords)
+    def openTradeGoodsMenu():
+        menpos = tradetools.tradeGoodsMenu(width, height, screen, t)
+        tradetools.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(tradetools.getClickCoords)
+    def openSaveMenu():
+        menpos = savetools.saveGameMenu(width, height, screen, t)
+        savetools.passArgs(width, height, screen, t, currentmenu, menpos)
+        screen.onclick(savetools.getClickCoords)
+
     if currentmenu =='New Game':
         menuitem = chooseMenuItem(x,y,menpos)
         if menuitem in menpos:
             print('menuitem clicked: ', menuitem)
-            boxT.hideturtle()
-            boxT.st()
+           
+            #boxT.st()
             boxT.color('gray')
             boxT.up()
             boxT.goto(menpos[menuitem][0]-20+270, menpos[menuitem][1])
+            boxT.rt(180)
             boxT.down()
-            
+           
             for i in range(2):
                 boxT.fd(270)
-                boxT.rt(90)
-                boxT.fd(45)
-                boxT.rt(90)
+                boxT.rt(90)               
+                boxT.fd(45)               
+                boxT.rt(90)               
             boxT.reset()
-            t.reset()
             if 'Save' not in menuitem:
                 t.reset()
+                
             currentmenu = menuitem
+            if currentmenu == "Build Deck":
+                openBuildDeckMenu()
+            elif currentmenu == 'Build Stats':
+                openBuildStatsMenu()
+            elif currentmenu == 'Trade Goods':
+                openTradeGoodsMenu()
+            elif currentmenu == 'Save Game':
+                openSaveMenu()
+            elif currentmenu == 'Save and Quit':
+                savetools.quickSave(width, height)
+                screen.bye()
